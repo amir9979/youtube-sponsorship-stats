@@ -16,16 +16,22 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install Emscripten
+      - name: Get the emsdk repo
+        run: git clone https://github.com/emscripten-core/emsdk.git
+
+      - name: Install and activate Emscripten
         run: |
-          sudo apt-get update
-          sudo apt-get install -y emscripten
+          cd emsdk
+          ./emsdk install latest
+          ./emsdk activate latest
+          source ./emsdk_env.sh
 
       - name: Compile SQLite wasm
         run: |
+          source ./emsdk_env.sh
           cd sql.js
           yarn
-          yarn build -j8 EMCC=/usr/lib/emscripten/emcc
+          yarn build -j8
 
       - name: Create the database
         run: ./create_db.sh

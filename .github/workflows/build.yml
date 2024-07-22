@@ -28,7 +28,7 @@ jobs:
 
       - name: Compile SQLite wasm
         run: |
-          source ./emsdk_env.sh
+          source ./emsdk/emsdk_env.sh
           cd sql.js
           yarn
           yarn build -j8

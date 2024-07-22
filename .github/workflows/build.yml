@@ -1,0 +1,40 @@
+name: Build and Upload Dist
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install Emscripten
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y emscripten
+
+      - name: Compile SQLite wasm
+        run: |
+          cd sql.js
+          yarn
+          yarn build -j8 EMCC=/usr/lib/emscripten/emcc
+
+      - name: Create the database
+        run: ./create_db.sh
+
+      - name: Build the website
+        run: yarn build
+
+      - name: Upload dist as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
